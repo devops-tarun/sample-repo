@@ -1,0 +1,49 @@
+pipeline {
+   agent any
+
+   tools {
+      // Install the Maven version configured as "M3" and add it to the path.
+      maven "Maven 3.6.3"
+   }
+
+   stages {
+      stage('Trigger and compile') {
+         steps {
+            // Get some code from a GitHub repository
+            git 'https://github.com/devops-tarun/sample-repo.git'
+
+            // Run Maven on a Unix agent.
+               sh "mvn compile"
+
+            // To run Maven on a Windows agent, use
+            // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+         }
+      }
+      
+      stage('test') {
+         steps {
+               sh "mvn test"
+         }
+      }
+      
+      stage('package') {
+         steps {
+               sh "mvn clean package"
+         }
+      }
+      
+      stage('Deploy') {
+         steps {
+               sh "cd /java-target && mkdir `date +%d-%m-%y-%H-%M` && cd `date +%d-%m-%y-%H-%M` && cp ~/workspace/pipeline2/target/*.jar ./"
+               //sh "export cdt=`date +%d-%m-%y-%H-%M`"
+              // sh "echo $cdt"
+               //sh "mkdir `date +%d-%m-%y-%H-%M`"
+               //sh "mkdir test"
+              // sh "cd test"
+               //sh "cd `date +%d-%m-%y-%H-%M`"
+               //sh "cp ~/workspace/pipeline2/target/*.jar ./"
+         }
+      }
+               
+   }
+}
